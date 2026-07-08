@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindLens — Facial Emotion Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◐</span>
+      <span class="brand-name">MindLens</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="live">Live Camera</button>
+      <button class="tab-btn" data-tab="upload">Upload Photo</button>
+      <button class="tab-btn" data-tab="about">About &amp; Accuracy</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- LIVE CAMERA TAB -->
+    <section class="panel active" id="panel-live">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Facial affect screening — not a diagnosis</p>
+          <h1>A steady second look<br>at how a face reads.</h1>
+          <p class="lede">
+            MindLens watches for the visual signature of low affect —
+            a flattened brow, a quieted mouth, a held stillness — and
+            names what it sees as either <strong>Depressed</strong> or
+            <strong>Not Depressed</strong>. Nothing more, nothing clinical.
+          </p>
+          <button id="startBtn" class="cta">Start camera</button>
+          <p class="fineprint">Runs in your browser. No video is stored.</p>
+        </div>
+
+        <div class="camera-stage">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" hidden></canvas>
+          <div class="scan-frame"></div>
+          <div class="result-badge" id="liveResult">
+            <span class="result-label">Awaiting camera…</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UPLOAD TAB -->
+    <section class="panel" id="panel-upload">
+      <div class="upload-grid">
+        <div class="upload-copy">
+          <p class="eyebrow">No camera? Use a photo</p>
+          <h2>Drop in a clear, front-facing photo.</h2>
+          <p class="lede">One face, good light, looking at the lens — that's all the model needs.</p>
+          <label class="file-drop" id="dropZone">
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <span id="dropLabel">Click to choose a photo, or drag one here</span>
+          </label>
+          <button id="analyzeBtn" class="cta" disabled>Analyze photo</button>
+        </div>
+        <div class="preview-stage">
+          <img id="previewImg" alt="Preview will appear here">
+          <div class="result-badge" id="uploadResult">
+            <span class="result-label">No photo yet</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT TAB -->
+    <section class="panel" id="panel-about">
+      <div class="about-grid">
+        <div>
+          <p class="eyebrow">How it works</p>
+          <h2>Two models, one pipeline.</h2>
+          <ol class="pipeline">
+            <li><strong>Face detection</strong> — OpenCV's Haar Cascade locates the face in the frame.</li>
+            <li><strong>Classification</strong> — A fine-tuned MobileNetV2 network, trained on a balanced set of depressed / non-depressed labeled faces, scores the crop.</li>
+            <li><strong>Decision</strong> — Above 50% confidence toward "depressed," the badge reads Depressed; otherwise, Not Depressed.</li>
+          </ol>
+        </div>
+        <div class="stat-card">
+          <p class="eyebrow">Held-out test accuracy</p>
+          <p class="big-stat" id="accuracyStat">—%</p>
+          <p class="fineprint">Measured on a balanced test split the model never trained on. Your number will differ based on your own training run — see train_model.py.</p>
+        </div>
+      </div>
+      <div class="disclaimer">
+        <strong>Please read:</strong> this tool estimates a visual pattern from a single facial expression.
+        It is not a medical or diagnostic instrument and cannot detect depression as a clinical condition.
+        If you or someone you know is struggling, please talk to a doctor, therapist, or a trusted person.
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

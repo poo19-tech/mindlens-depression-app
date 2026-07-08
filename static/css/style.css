@@ -1,0 +1,243 @@
+/* ============================================================
+   DESIGN TOKENS
+   Palette: deep forest teal (grounded, clinical-calm) + warm gold
+   accent (attention, not alarm) + soft coral / sage for the two
+   outcome states.
+   ============================================================ */
+:root {
+  --ink:        #16211d;
+  --paper:      #eef2ee;
+  --forest:     #1f3a34;
+  --forest-2:   #274a42;
+  --gold:       #c9a24b;
+  --sage:       #4c8577;
+  --coral:      #b5636a;
+  --line:       #d6ddd6;
+  --white:      #ffffff;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------- TOPBAR ---------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 5vw;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--forest);
+}
+.brand-mark { color: var(--gold); font-size: 1.4rem; }
+
+.tabs { display: flex; gap: 6px; background: var(--white); padding: 5px; border-radius: 999px; border: 1px solid var(--line); }
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--forest-2);
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.tab-btn.active { background: var(--forest); color: var(--white); }
+.tab-btn:hover:not(.active) { background: var(--paper); }
+
+/* ---------------- PANELS ---------------- */
+main { padding: 4vw 5vw 6vw; }
+.panel { display: none; animation: fadeIn .35s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none; } }
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--sage);
+  margin: 0 0 10px;
+}
+
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--forest);
+  line-height: 1.12;
+  margin: 0 0 18px;
+}
+h1 { font-size: clamp(2.1rem, 4vw, 3.2rem); }
+h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+
+.lede { font-size: 1.05rem; line-height: 1.6; color: #40514a; max-width: 46ch; }
+
+.cta {
+  margin-top: 22px;
+  background: var(--forest);
+  color: var(--white);
+  border: none;
+  padding: 14px 30px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
+}
+.cta:hover:not(:disabled) { background: var(--forest-2); transform: translateY(-1px); }
+.cta:disabled { background: #a9b3ad; cursor: not-allowed; }
+
+.fineprint { margin-top: 10px; font-size: .82rem; color: #6b776f; }
+
+/* ---------------- LIVE CAMERA ---------------- */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 6vw;
+  align-items: center;
+}
+
+.camera-stage {
+  position: relative;
+  background: var(--forest);
+  border-radius: 22px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#video { width: 100%; height: 100%; object-fit: cover; }
+
+.scan-frame {
+  position: absolute;
+  inset: 12%;
+  border: 2px dashed rgba(201, 162, 75, 0.6);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.result-badge {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+  right: 18px;
+  background: rgba(22, 33, 29, 0.82);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: var(--white);
+  font-weight: 600;
+  text-align: center;
+  transition: background .3s ease;
+}
+.result-badge.depressed { background: rgba(181, 99, 106, 0.92); }
+.result-badge.not-depressed { background: rgba(76, 133, 119, 0.92); }
+
+/* ---------------- UPLOAD ---------------- */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: start; }
+.file-drop {
+  display: flex; align-items: center; justify-content: center;
+  border: 2px dashed var(--sage);
+  border-radius: 14px;
+  padding: 40px 20px;
+  margin-top: 22px;
+  cursor: pointer;
+  color: var(--forest-2);
+  font-weight: 600;
+  background: var(--white);
+  transition: border-color .2s ease, background .2s ease;
+}
+.file-drop:hover { background: #f4f8f5; border-color: var(--gold); }
+
+.preview-stage {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  min-height: 320px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 16px;
+}
+#previewImg {
+  max-width: 100%;
+  max-height: 55vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: none;
+  border-radius: 12px;
+}
+.preview-stage .result-badge { position: static; }
+#uploadResult {
+  position: static;
+  margin-top: 16px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* ---------------- ABOUT ---------------- */
+.about-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 6vw; align-items: start; margin-bottom: 40px; }
+.pipeline { padding-left: 20px; line-height: 1.8; color: #40514a; }
+.pipeline li { margin-bottom: 6px; }
+
+.stat-card {
+  background: var(--forest);
+  color: var(--white);
+  border-radius: 22px;
+  padding: 34px;
+}
+.stat-card .eyebrow { color: var(--gold); }
+.big-stat { font-family: var(--font-display); font-size: 3.4rem; margin: 6px 0; }
+
+.disclaimer {
+  border-left: 4px solid var(--gold);
+  background: var(--white);
+  padding: 18px 22px;
+  border-radius: 0 12px 12px 0;
+  color: #40514a;
+  line-height: 1.6;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 860px) {
+  .hero-grid, .upload-grid, .about-grid { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------------- ACCESSIBILITY ---------------- */
+button:focus-visible, .file-drop:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+}
