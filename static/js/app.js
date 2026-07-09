@@ -53,9 +53,11 @@ async function sendToBackend(base64Image) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ image: base64Image }),
   });
+  if (!response.ok) {
+    throw new Error(`Server error: ${response.status}`);
+  }
   return response.json();
 }
-
 function paintBadge(badgeEl, result) {
   if (result.error) {
     badgeEl.className = "result-badge";
@@ -95,8 +97,14 @@ async function startCameraIfNeeded() {
 let predictionHistory = [];
 const HISTORY_SIZE = 3; // how many recent predictions to consider
 
+let isProcessingLiveFrame = false; // prevents pile-up of overlapping requests
+
 function captureAndAnalyzeLiveFrame() {
   if (!video.videoWidth) return; // camera not ready yet
+  if (isProcessingLiveFrame) return; // previous request still running, skip this tick
+
+  isProcessingLiveFrame = true;
+  liveResult.innerHTML = `<span class="result-label">Analyzing…</span>`;
 
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
@@ -104,8 +112,7 @@ function captureAndAnalyzeLiveFrame() {
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const base64Image = canvas.toDataURL("image/jpeg", 0.85);
-  sendToBackend(base64Image).then(result => {
-    if (result.error) {
+  sendToBackend(base64Image).then(result => {    if (result.error) {
       paintBadge(liveResult, result);
       return;
     }
@@ -123,10 +130,15 @@ function captureAndAnalyzeLiveFrame() {
     // Only show a label once it has a clear majority in recent history
     const smoothedLabel = depressedCount > notDepressedCount ? "Depressed" : "Not Depressed";
 
-    paintBadge(liveResult, {
+   paintBadge(liveResult, {
       label: smoothedLabel,
       confidence: result.confidence
     });
+  }).catch(err => {
+    liveResult.innerHTML = `<span class="result-label">Server is slow/unavailable — retrying...</span>`;
+    console.error("Live prediction failed:", err);
+  }).finally(() => {
+    isProcessingLiveFrame = false;
   });
 }
 startBtn.addEventListener("click", startCameraIfNeeded);
@@ -169,10 +181,14 @@ dropZone.addEventListener("drop", e => {
 
 analyzeBtn.addEventListener("click", () => {
   if (!selectedBase64) return;
-  uploadResult.innerHTML = `<span class="result-label">Analyzing…</span>`;
-  sendToBackend(selectedBase64).then(result => paintBadge(uploadResult, result));
+  uploadResult.innerHTML = `<span class="result-label">Analyzing… (can take up to a minute on free hosting)</span>`;
+  sendToBackend(selectedBase64)
+    .then(result => paintBadge(uploadResult, result))
+    .catch(err => {
+      uploadResult.innerHTML = `<span class="result-label">Request failed or timed out. Please try again.</span>`;
+      console.error("Upload prediction failed:", err);
+    });
 });
-
 // ---------- ABOUT TAB: show real test accuracy if backend provides it ----------
 function loadAccuracyIfAvailable() {
   const el = document.getElementById("accuracyStat");
