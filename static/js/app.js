@@ -85,7 +85,7 @@ async function startCameraIfNeeded() {
     startBtn.textContent = "Camera running";
     startBtn.disabled = true;
 
-    liveIntervalId = setInterval(captureAndAnalyzeLiveFrame, 1500);
+    liveIntervalId = setInterval(captureAndAnalyzeLiveFrame, 6000);
   } catch (err) {
     liveResult.innerHTML = `<span class="result-label">Camera access denied or unavailable.</span>`;
   }
